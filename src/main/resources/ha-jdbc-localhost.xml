@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ha-jdbc xmlns="urn:ha-jdbc:cluster:2.1">
+    <cluster dialect="postgresql">
+        <database id="master" location="org.postgresql.ds.PGSimpleDataSource">
+            <user>gelin</user>
+            <password>gelin</password>
+            <property name="serverName">localhost</property>
+            <property name="databaseName">json_test</property>
+        </database>
+    </cluster>
+</ha-jdbc>
