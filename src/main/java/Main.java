@@ -1,4 +1,5 @@
 import net.sf.hajdbc.sql.DataSource;
+import org.postgresql.ds.PGSimpleDataSource;
 
 import java.sql.*;
 
@@ -28,7 +29,7 @@ public class Main {
             StringBuffer printable = new StringBuffer();
             while (result.next()) {
                 printable.setLength(0);
-                for (int i = 0; i < columns; i++) {
+                for (int i = 1; i <= columns; i++) {
                     String value = result.getString(i);
                     printable.append("data");
                     printable.append(i);
@@ -65,19 +66,27 @@ public class Main {
             minTime = Math.min(minTime, result.millis);
             maxTime = Math.max(maxTime, result.millis);
         }
-        System.err.println(label + ": " + totalTime / REPEAT / 1000.0 + " average time of the experiment");
+        System.err.println(label + ": " + (double)totalTime / REPEAT / 1000.0 + " average time of the experiment");
         System.err.println(label + ": " + minTime + " min time of the experiment");
         System.err.println(label + ": " + maxTime + " max time of the experiment");
-        System.err.println(label + ": " + totalTime / totalRows + " average time for a row");
+        System.err.println(label + ": " + (double)totalTime / totalRows + " average time for a row");
     }
 
     public static void main(String[] args) throws SQLException {
-        DataSource source = new DataSource();
-        source.setConfig("ha-jdbc-localhost.xml");
+//        DataSource source = new DataSource();
+//        source.setConfig("ha-jdbc-localhost.xml");
+//        Connection connection = source.getConnection();
 
+//        runExperiment(connection, "ha-jdbc");
+
+        PGSimpleDataSource source = new PGSimpleDataSource();
+        source.setServerName("localhost");
+        source.setUser("gelin");
+        source.setPassword("gelin");
+        source.setDatabaseName("json_test");
         Connection connection = source.getConnection();
 
-        runExperiment(connection, "ha-jdbc");
+        runExperiment(connection, "pg-simple-ds");
 
         connection.close();
     }

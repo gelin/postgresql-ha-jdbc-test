@@ -1,8 +1,17 @@
 <?xml version="1.0"?>
 <ha-jdbc xmlns="urn:ha-jdbc:cluster:3.0">
-    <sync id="passive"></sync>
-    <cluster dialect="postgresql" default-sync="passive">
-        <database id="master" location="org.postgresql.ds.PGSimpleDataSource">
+    <sync id="passive"/>
+    <state id="simple"/>
+    <cluster dialect="postgresql"
+             balancer="round-robin"
+             default-sync="passive"
+             durability="none"
+             meta-data-cache="shared-lazy"
+             detect-sequences="false"
+             detect-identity-columns="false">
+        <database id="master"
+                  location="org.postgresql.ds.PGSimpleDataSource"
+                  weight="1">
             <user>postgres</user>
             <password>postgres</password>
             <property name="serverName">localhost</property>
