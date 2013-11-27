@@ -1,12 +1,15 @@
-import net.sf.hajdbc.sql.DataSource;
-import org.postgresql.ds.PGSimpleDataSource;
 
+import javax.sql.DataSource;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.sql.*;
 
 public class Main {
 
+    static final boolean DEBUG = false;
     static final String QUERY = "SELECT * FROM test_values;";
     static final int REPEAT = 10;
+
 
     static class RunResult {
         private final int rows;
@@ -53,7 +56,8 @@ public class Main {
         return new RunResult(0, 0);
     }
 
-    static void runExperiment(Connection connection, String label) throws SQLException {
+    static void runExperiment(DataSource dataSource, String label) throws SQLException {
+        Connection connection = dataSource.getConnection();
         System.err.println("selecting " + label + "...");
         int totalRows = 0;
         long totalTime= 0;
@@ -70,25 +74,33 @@ public class Main {
         System.err.println(label + ": " + minTime + " min time of the experiment");
         System.err.println(label + ": " + maxTime + " max time of the experiment");
         System.err.println(label + ": " + (double)totalTime / totalRows + " average time for a row");
+        connection.close();
     }
 
     public static void main(String[] args) throws SQLException {
-//        DataSource source = new DataSource();
-//        source.setConfig("ha-jdbc-localhost.xml");
-//        Connection connection = source.getConnection();
+        if (!DEBUG) {
+            System.setOut(
+                    new PrintStream(
+                            new OutputStream() {
+                                public void close() {}
+                                public void flush() {}
+                                public void write(byte[] b) {}
+                                public void write(byte[] b, int off, int len) {}
+                                public void write(int b) {}
+                            }
+                    )
+            );
+        }
 
-//        runExperiment(connection, "ha-jdbc");
+        DataSourceFactory factory = new DataSourceFactory(
+                new String[] {"localhost"},
+                "gelin", "gelin", "json_test");
+//        runExperiment(factory.createPGSimpleDataSource(), "pg-simple-ds");
+        runExperiment(factory.createHAJDBCDataSource("postgres", "postgres"), "ha-jdbc");
+    }
 
-        PGSimpleDataSource source = new PGSimpleDataSource();
-        source.setServerName("localhost");
-        source.setUser("gelin");
-        source.setPassword("gelin");
-        source.setDatabaseName("json_test");
-        Connection connection = source.getConnection();
-
-        runExperiment(connection, "pg-simple-ds");
-
-        connection.close();
+    private Main() {
+        //avoid instantiation
     }
 
 }
