@@ -1,10 +1,14 @@
 <?xml version="1.0"?>
-<ha-jdbc xmlns="urn:ha-jdbc:cluster:2.1">
-    <cluster dialect="postgresql">
+<ha-jdbc xmlns="urn:ha-jdbc:cluster:3.0">
+    <sync id="passive"></sync>
+    <cluster dialect="postgresql" default-sync="passive">
         <database id="master" location="org.postgresql.ds.PGSimpleDataSource">
-            <user>gelin</user>
-            <password>gelin</password>
+            <user>postgres</user>
+            <password>postgres</password>
             <property name="serverName">localhost</property>
+            <property name="portNumber">5432</property>
+            <property name="user">gelin</property>
+            <property name="password">gelin</property>
             <property name="databaseName">json_test</property>
         </database>
     </cluster>
