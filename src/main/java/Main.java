@@ -8,7 +8,7 @@ public class Main {
 
     static final boolean DEBUG = false;
     static final String QUERY = "SELECT * FROM test_values;";
-    static final int REPEAT = 10;
+    static final int REPEAT = 2;
 
 
     static class RunResult {
@@ -93,8 +93,8 @@ public class Main {
         }
 
         DataSourceFactory factory = new DataSourceFactory(
-                new String[] {"localhost"},
-                "gelin", "gelin", "json_test");
+                new String[] {"192.168.7.92", "192.168.7.36"},
+                "est", "est", "est");
 //        runExperiment(factory.createPGSimpleDataSource(), "pg-simple-ds");
         runExperiment(factory.createHAJDBCDataSource("postgres", "postgres"), "ha-jdbc");
     }
