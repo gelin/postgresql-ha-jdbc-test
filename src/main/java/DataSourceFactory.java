@@ -1,14 +1,21 @@
 import net.sf.hajdbc.SimpleDatabaseClusterConfigurationFactory;
+import net.sf.hajdbc.SynchronizationStrategy;
+import net.sf.hajdbc.balancer.roundrobin.RoundRobinBalancerFactory;
+import net.sf.hajdbc.cache.lazy.SharedLazyDatabaseMetaDataCacheFactory;
 import net.sf.hajdbc.cache.simple.SimpleDatabaseMetaDataCacheFactory;
 import net.sf.hajdbc.dialect.postgresql.PostgreSQLDialectFactory;
+import net.sf.hajdbc.durability.none.NoDurabilityFactory;
 import net.sf.hajdbc.sql.DataSourceDatabase;
 import net.sf.hajdbc.sql.DataSourceDatabaseClusterConfiguration;
 import net.sf.hajdbc.state.simple.SimpleStateManagerFactory;
+import net.sf.hajdbc.sync.PassiveSynchronizationStrategy;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DataSourceFactory {
 
@@ -42,6 +49,7 @@ public class DataSourceFactory {
         for (String server : this.serverName) {
             DataSourceDatabase db = new DataSourceDatabase();
             db.setId(server);
+            db.setWeight(1);
             db.setLocation(location);
             db.setUser(adminUser);
             db.setPassword(adminPassword);
@@ -55,8 +63,16 @@ public class DataSourceFactory {
         DataSourceDatabaseClusterConfiguration cluster = new DataSourceDatabaseClusterConfiguration();
         cluster.setDatabases(dbs);
         cluster.setDialectFactory(new PostgreSQLDialectFactory());
-        cluster.setDatabaseMetaDataCacheFactory(new SimpleDatabaseMetaDataCacheFactory());
         cluster.setStateManagerFactory(new SimpleStateManagerFactory());
+        Map<String, SynchronizationStrategy> syncs = new HashMap<String, SynchronizationStrategy>();
+        syncs.put("passive", new PassiveSynchronizationStrategy());
+        cluster.setSynchronizationStrategyMap(syncs);
+        cluster.setDefaultSynchronizationStrategy("passive");
+        cluster.setBalancerFactory(new RoundRobinBalancerFactory());
+        cluster.setDurabilityFactory(new NoDurabilityFactory());
+        cluster.setDatabaseMetaDataCacheFactory(new SharedLazyDatabaseMetaDataCacheFactory());
+        cluster.setSequenceDetectionEnabled(false);
+        cluster.setIdentityColumnDetectionEnabled(false);
 
         net.sf.hajdbc.sql.DataSource source = new net.sf.hajdbc.sql.DataSource();
         source.setCluster("ha-cluster");

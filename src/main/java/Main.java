@@ -71,9 +71,9 @@ public class Main {
             maxTime = Math.max(maxTime, result.millis);
         }
         System.err.println(label + ": " + (double)totalTime / REPEAT / 1000.0 + " average time of the experiment");
-        System.err.println(label + ": " + minTime + " min time of the experiment");
-        System.err.println(label + ": " + maxTime + " max time of the experiment");
-        System.err.println(label + ": " + (double)totalTime / totalRows + " average time for a row");
+        System.err.println(label + ": " + minTime / 1000.0 + " min time of the experiment");
+        System.err.println(label + ": " + maxTime / 1000.0 + " max time of the experiment");
+        System.err.println(label + ": " + (double)totalTime / totalRows / 1000.0 + " average time for a row");
         connection.close();
     }
 
