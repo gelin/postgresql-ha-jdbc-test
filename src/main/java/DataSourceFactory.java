@@ -1,17 +1,12 @@
 import net.sf.hajdbc.SimpleDatabaseClusterConfigurationFactory;
 import net.sf.hajdbc.cache.simple.SimpleDatabaseMetaDataCacheFactory;
 import net.sf.hajdbc.dialect.postgresql.PostgreSQLDialectFactory;
-import net.sf.hajdbc.distributed.CommandDispatcher;
-import net.sf.hajdbc.distributed.CommandDispatcherFactory;
-import net.sf.hajdbc.distributed.MembershipListener;
-import net.sf.hajdbc.distributed.Stateful;
 import net.sf.hajdbc.sql.DataSourceDatabase;
 import net.sf.hajdbc.sql.DataSourceDatabaseClusterConfiguration;
 import net.sf.hajdbc.state.simple.SimpleStateManagerFactory;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +59,7 @@ public class DataSourceFactory {
         cluster.setStateManagerFactory(new SimpleStateManagerFactory());
 
         net.sf.hajdbc.sql.DataSource source = new net.sf.hajdbc.sql.DataSource();
+        source.setCluster("ha-cluster");
         source.setConfigurationFactory(new SimpleDatabaseClusterConfigurationFactory<DataSource, DataSourceDatabase>(cluster));
 
         return source;
