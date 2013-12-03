@@ -10,15 +10,33 @@ public class Experiment implements Callable<Experiment.Result> {
     public static class Result {
 
         public final int rows;
+
         public final long millis;
         private Result(int rows, long millis) {
             this.rows = rows;
             this.millis = millis;
         }
-
     }
 
     static int instanceCount = 0;
+    static ThreadLocal<Connection> threadConnection = null;
+
+    private static synchronized Connection getConnection(final DataSource source) {
+        if (threadConnection == null) {
+            threadConnection = new ThreadLocal<Connection>() {
+                @Override
+                protected Connection initialValue() {
+                    try {
+                        return source.getConnection();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                }
+            };
+        }
+        return threadConnection.get();
+    }
 
     private final String label;
     private final DataSource source;
@@ -35,7 +53,7 @@ public class Experiment implements Callable<Experiment.Result> {
         Connection connection = null;
         Statement statement = null;
         try {
-            connection = this.source.getConnection();
+            connection = getConnection(this.source);
             long start = System.currentTimeMillis();
             statement = connection.createStatement();
             ResultSet result = statement.executeQuery(this.query);
@@ -63,9 +81,6 @@ public class Experiment implements Callable<Experiment.Result> {
         } finally {
             if (statement != null) {
                 statement.close();
-            }
-            if (connection != null) {
-                connection.close();
             }
         }
         return new Result(0, 0);
