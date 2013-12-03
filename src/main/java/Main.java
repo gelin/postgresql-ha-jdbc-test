@@ -8,6 +8,7 @@ public class Main {
 
     static final boolean DEBUG = false;
     static final String QUERY = "SELECT * FROM test_values;";
+    static final long DURATION = 5 * 60 * 1000; // 5 min
 
     public static void main(String[] args) throws Exception {
         if (!DEBUG) {
@@ -29,7 +30,7 @@ public class Main {
                 "est", "est", "est");
 //        Experiment experiment = new Experiment("test", factory.createHAJDBCDataSource("postgres", "postgres"), QUERY);
 //        experiment.call();
-        ExperimentExecutor executor = new ExperimentExecutor("ha-jdbc-2", 2, 5 * 60 * 1000,
+        ExperimentExecutor executor = new ExperimentExecutor("ha-jdbc-2", 2, DURATION,
                 factory.createHAJDBCDataSource("postgres", "postgres"), QUERY);
         executor.run();
     }

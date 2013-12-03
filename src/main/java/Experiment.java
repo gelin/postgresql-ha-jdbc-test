@@ -18,12 +18,14 @@ public class Experiment implements Callable<Experiment.Result> {
 
     }
 
+    static int instanceCount = 0;
+
     private final String label;
     private final DataSource source;
     private final String query;
 
-    public Experiment(String label, DataSource source, String query) {
-        this.label = label;
+    public Experiment(DataSource source, String query) {
+        this.label = String.valueOf(instanceCount++);
         this.source = source;
         this.query = query;
     }
