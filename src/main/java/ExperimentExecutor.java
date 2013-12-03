@@ -47,6 +47,10 @@ public class ExperimentExecutor {
                     this.pool.shutdown();
                 }
             }
+            System.err.println(this.label + ": " + (double) this.totalTime / this.count / 1000.0 + " average time of the experiment");
+            System.err.println(this.label + ": " + this.minTime / 1000.0 + " min time of the experiment");
+            System.err.println(this.label + ": " + this.maxTime / 1000.0 + " max time of the experiment");
+            System.err.println(this.label + ": " + (double) this.totalTime / this.totalRows / 1000.0 + " average time for a row");
         } catch (Exception e) {
             e.printStackTrace();
             this.pool.shutdown();
@@ -62,10 +66,6 @@ public class ExperimentExecutor {
         this.totalTime += result.millis;
         this.minTime = Math.min(this.minTime, result.millis);
         this.maxTime = Math.max(this.maxTime, result.millis);
-        System.err.println(this.label + ": " + (double) this.totalTime / this.count / 1000.0 + " average time of the experiment");
-        System.err.println(this.label + ": " + this.minTime / 1000.0 + " min time of the experiment");
-        System.err.println(this.label + ": " + this.maxTime / 1000.0 + " max time of the experiment");
-        System.err.println(this.label + ": " + (double) this.totalTime / this.totalRows / 1000.0 + " average time for a row");
     }
 
 }
