@@ -29,15 +29,19 @@ public class ExperimentExecutor {
 
     public void run() {
         System.err.println("selecting " + this.label + "...");
-        long start = System.currentTimeMillis();
+        long end = System.currentTimeMillis() + this.duration;
+        int tasks = 0;
         try {
             for (int i = 0; i < this.threads; i++) {
+                tasks++;
                 this.completionService.submit(new Experiment(this.source, this.query));
             }
-            Future<Experiment.Result> future;
-            while ((future = this.completionService.poll()) != null) {
+            while (tasks > 0) {
+                Future<Experiment.Result> future = this.completionService.take();
+                tasks--;
                 aggregate(future.get());
-                if (System.currentTimeMillis() < start + this.duration) {
+                if (System.currentTimeMillis() < end) {
+                    tasks++;
                     this.completionService.submit(new Experiment(this.source, this.query));
                 } else {
                     this.pool.shutdown();
