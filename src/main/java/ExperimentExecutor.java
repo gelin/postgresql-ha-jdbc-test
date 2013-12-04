@@ -47,6 +47,7 @@ public class ExperimentExecutor {
                     this.pool.shutdown();
                 }
             }
+            System.err.println(this.label + ": " + this.count + " experiments run");
             System.err.println(this.label + ": " + (double) this.totalTime / this.count / 1000.0 + " average time of the experiment");
             System.err.println(this.label + ": " + this.minTime / 1000.0 + " min time of the experiment");
             System.err.println(this.label + ": " + this.maxTime / 1000.0 + " max time of the experiment");

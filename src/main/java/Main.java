@@ -30,7 +30,7 @@ public class Main {
                 "est", "est", "est");
 //        Experiment experiment = new Experiment("test", factory.createHAJDBCDataSource("postgres", "postgres"), QUERY);
 //        experiment.call();
-        ExperimentExecutor executor = new ExperimentExecutor("ha-jdbc-account-2", 2, DURATION,
+        ExperimentExecutor executor = new ExperimentExecutor("ha-jdbc-account-4", 4, DURATION,
                 factory.createHAJDBCDataSource("postgres", "postgres"), QUERY);
         executor.run();
     }

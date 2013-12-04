@@ -1,5 +1,6 @@
 import net.sf.hajdbc.SimpleDatabaseClusterConfigurationFactory;
 import net.sf.hajdbc.SynchronizationStrategy;
+import net.sf.hajdbc.balancer.random.RandomBalancerFactory;
 import net.sf.hajdbc.balancer.roundrobin.RoundRobinBalancerFactory;
 import net.sf.hajdbc.cache.lazy.SharedLazyDatabaseMetaDataCacheFactory;
 import net.sf.hajdbc.cache.simple.SimpleDatabaseMetaDataCacheFactory;
@@ -68,7 +69,7 @@ public class DataSourceFactory {
         syncs.put("passive", new PassiveSynchronizationStrategy());
         cluster.setSynchronizationStrategyMap(syncs);
         cluster.setDefaultSynchronizationStrategy("passive");
-        cluster.setBalancerFactory(new RoundRobinBalancerFactory());
+        cluster.setBalancerFactory(new RandomBalancerFactory());
         cluster.setDurabilityFactory(new NoDurabilityFactory());
         cluster.setDatabaseMetaDataCacheFactory(new SharedLazyDatabaseMetaDataCacheFactory());
         cluster.setSequenceDetectionEnabled(false);
