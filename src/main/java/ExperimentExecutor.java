@@ -1,5 +1,4 @@
 import javax.sql.DataSource;
-import java.util.ListIterator;
 import java.util.concurrent.*;
 
 public class ExperimentExecutor {
@@ -11,7 +10,8 @@ public class ExperimentExecutor {
     private final ExecutorCompletionService<Experiment.Result> completionService;
     private final DataSource source;
     private final String query;
-    private int count = 0;
+    private int runs = 0;
+    private int failures = 0;
     private long totalRows = 0;
     private long totalTime = 0;
     private long minTime = Long.MAX_VALUE;
@@ -47,8 +47,9 @@ public class ExperimentExecutor {
                     this.pool.shutdown();
                 }
             }
-            System.err.println(this.label + ": " + this.count + " experiments run");
-            System.err.println(this.label + ": " + (double) this.totalTime / this.count / 1000.0 + " average time of the experiment");
+            System.err.println(this.label + ": " + this.runs + " experiments run");
+            System.err.println(this.label + ": " + this.failures + " experiments failed");
+            System.err.println(this.label + ": " + (double) this.totalTime / this.runs / 1000.0 + " average time of the experiment");
             System.err.println(this.label + ": " + this.minTime / 1000.0 + " min time of the experiment");
             System.err.println(this.label + ": " + this.maxTime / 1000.0 + " max time of the experiment");
             System.err.println(this.label + ": " + (double) this.totalTime / this.totalRows / 1000.0 + " average time for a row");
@@ -62,7 +63,10 @@ public class ExperimentExecutor {
         if (result == null) {
             return;
         }
-        this.count++;
+        this.runs++;
+        if (!result.success) {
+            this.failures++;
+        }
         this.totalRows += result.rows;
         this.totalTime += result.millis;
         this.minTime = Math.min(this.minTime, result.millis);

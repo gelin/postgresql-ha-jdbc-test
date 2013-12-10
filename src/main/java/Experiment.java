@@ -10,11 +10,13 @@ public class Experiment implements Callable<Experiment.Result> {
     public static class Result {
 
         public final int rows;
-
         public final long millis;
-        private Result(int rows, long millis) {
+        public final boolean success;
+
+        private Result(int rows, long millis, boolean success) {
             this.rows = rows;
             this.millis = millis;
+            this.success = success;
         }
     }
 
@@ -75,7 +77,7 @@ public class Experiment implements Callable<Experiment.Result> {
             }
             long end = System.currentTimeMillis();
             System.err.println(this.label + ": selected " + count + " rows in " + (end - start) / 1000.0 + " secs");
-            return new Result(count, end - start);
+            return new Result(count, end - start, true);
         } catch (SQLException e) {
             System.err.println(e);
         } finally {
@@ -83,7 +85,7 @@ public class Experiment implements Callable<Experiment.Result> {
                 statement.close();
             }
         }
-        return new Result(0, 0);
+        return new Result(0, 0, false);
     }
 
 }
