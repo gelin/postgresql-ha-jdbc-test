@@ -25,13 +25,11 @@ public class Main {
             );
         }
 
-        DataSourceFactory factory = new DataSourceFactory(
-                new String[] {"192.168.7.92", "192.168.7.36"},
-                "est", "est", "est");
-//        Experiment experiment = new Experiment("test", factory.createHAJDBCDataSource("postgres", "postgres"), QUERY);
+        DriverConnectionSource source = new DriverConnectionSource("jdbc:ha-jdbc:test-cluster", "est", "est");
+//        Experiment experiment = new Experiment(source, QUERY);
 //        experiment.call();
         ExperimentExecutor executor = new ExperimentExecutor("ha-jdbc-account-2", 2, DURATION,
-                factory.createHAJDBCDataSource("postgres", "postgres"), QUERY);
+                source, QUERY);
         executor.run();
     }
 

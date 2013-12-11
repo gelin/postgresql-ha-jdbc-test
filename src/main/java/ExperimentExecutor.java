@@ -8,7 +8,7 @@ public class ExperimentExecutor {
     private final long duration;
     private final ExecutorService pool;
     private final ExecutorCompletionService<Experiment.Result> completionService;
-    private final DataSource source;
+    private final DriverConnectionSource source;
     private final String query;
     private int runs = 0;
     private int failures = 0;
@@ -17,7 +17,7 @@ public class ExperimentExecutor {
     private long minTime = Long.MAX_VALUE;
     private long maxTime = 0;
 
-    public ExperimentExecutor(String label, int threads, long duration, DataSource source, String query) {
+    public ExperimentExecutor(String label, int threads, long duration, DriverConnectionSource source, String query) {
         this.label = label;
         this.threads = threads;
         this.duration = duration;

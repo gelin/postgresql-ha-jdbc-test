@@ -1,8 +1,5 @@
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.concurrent.Callable;
 
 public class Experiment implements Callable<Experiment.Result> {
@@ -23,7 +20,7 @@ public class Experiment implements Callable<Experiment.Result> {
     static int instanceCount = 0;
     static ThreadLocal<Connection> threadConnection = null;
 
-    private static synchronized Connection getConnection(final DataSource source) {
+    private static synchronized Connection getConnection(final DriverConnectionSource source) {
         if (threadConnection == null) {
             threadConnection = new ThreadLocal<Connection>() {
                 @Override
@@ -42,10 +39,10 @@ public class Experiment implements Callable<Experiment.Result> {
     }
 
     private final String label;
-    private final DataSource source;
+    private final DriverConnectionSource source;
     private final String query;
 
-    public Experiment(DataSource source, String query) {
+    public Experiment(DriverConnectionSource source, String query) {
         this.label = String.valueOf(instanceCount++);
         this.source = source;
         this.query = query;
