@@ -49,15 +49,6 @@ public class DataSourceFactory {
         return source;
     }
 
-    public DataSource createHAJDBCDataSource(String configResource) {
-        net.sf.hajdbc.sql.DataSource source = new net.sf.hajdbc.sql.DataSource();
-        source.setCluster("ha-cluster");
-        source.setConfigurationFactory(new XMLDatabaseClusterConfigurationFactory<DataSource, DataSourceDatabase>(
-                DataSourceDatabaseClusterConfiguration.class, "ha-cluster", configResource
-        ));
-        return source;
-    }
-
     public DataSource createHAJDBCDataSource(String adminUser, String adminPassword) {
         return createHAJDBCDataSource(adminUser, adminPassword, "org.postgresql.ds.PGSimpleDataSource");
     }

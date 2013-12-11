@@ -18,25 +18,6 @@ public class Experiment implements Callable<Experiment.Result> {
     }
 
     static int instanceCount = 0;
-    static ThreadLocal<Connection> threadConnection = null;
-
-    private static synchronized Connection getConnection(final ConnectionSource source) {
-        if (threadConnection == null) {
-            threadConnection = new ThreadLocal<Connection>() {
-                @Override
-                protected Connection initialValue() {
-                    try {
-                        System.err.println("opening a new connection for " + Thread.currentThread());
-                        return source.getConnection();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                }
-            };
-        }
-        return threadConnection.get();
-    }
 
     private final String label;
     private final ConnectionSource source;
@@ -53,7 +34,7 @@ public class Experiment implements Callable<Experiment.Result> {
         Connection connection = null;
         Statement statement = null;
         try {
-            connection = getConnection(this.source);
+            connection = this.source.getConnection();
             long start = System.currentTimeMillis();
             statement = connection.createStatement();
             ResultSet result = statement.executeQuery(this.query);

@@ -1,4 +1,9 @@
 
+import net.sf.hajdbc.DatabaseClusterFactory;
+import net.sf.hajdbc.sql.DataSourceDatabase;
+import net.sf.hajdbc.sql.DataSourceDatabaseClusterConfiguration;
+import net.sf.hajdbc.xml.XMLDatabaseClusterConfigurationFactory;
+
 import javax.sql.DataSource;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -25,15 +30,24 @@ public class Main {
             );
         }
 
-//        ConnectionSource source = new DriverConnectionSource("jdbc:ha-jdbc:test-cluster", "est", "est");
-        DataSourceFactory factory = new DataSourceFactory();
-        ConnectionSource source = new DataSourceWrapper(factory.createHAJDBCDataSource("ha-jdbc-test-cluster.xml"));
+        ConnectionSource source =createHaJdbcConnectionSource("ha-jdbc-test-cluster.xml");
 //        Experiment experiment = new Experiment(source, QUERY);
 //        experiment.call();
         ExperimentExecutor executor = new ExperimentExecutor("ha-jdbc-account-2", 2, DURATION,
                 source, QUERY);
         executor.run();
         System.exit(0); // to force stopping of ha-jdbc threads
+    }
+
+    private static ConnectionSource createHaJdbcConnectionSource(String configResource) {
+        net.sf.hajdbc.sql.DataSource source = new net.sf.hajdbc.sql.DataSource();
+        source.setConfigurationFactory(new XMLDatabaseClusterConfigurationFactory<DataSource, DataSourceDatabase>(
+                DataSourceDatabaseClusterConfiguration.class, "ha-cluster", configResource
+        ));
+        ConnectionSource connectionSource = new DataSourceWrapper(source);
+        DatabaseClusterFactory.
+        connectionSource = new ThreadConnectionSource(connectionSource, source.getFactory());
+        return connectionSource;
     }
 
     private Main() {
