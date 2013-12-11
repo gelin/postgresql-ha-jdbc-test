@@ -25,12 +25,15 @@ public class Main {
             );
         }
 
-        DriverConnectionSource source = new DriverConnectionSource("jdbc:ha-jdbc:test-cluster", "est", "est");
-//        Experiment experiment = new Experiment(source, QUERY);
-//        experiment.call();
-        ExperimentExecutor executor = new ExperimentExecutor("ha-jdbc-account-2", 2, DURATION,
-                source, QUERY);
-        executor.run();
+//        ConnectionSource source = new DriverConnectionSource("jdbc:ha-jdbc:test-cluster", "est", "est");
+        DataSourceFactory factory = new DataSourceFactory();
+        ConnectionSource source = new DataSourceWrapper(factory.createHAJDBCDataSource("ha-jdbc-test-cluster.xml"));
+        Experiment experiment = new Experiment(source, QUERY);
+        experiment.call();
+//        ExperimentExecutor executor = new ExperimentExecutor("ha-jdbc-account-2", 2, DURATION,
+//                source, QUERY);
+//        executor.run();
+        System.exit(0); // to force stopping of ha-jdbc threads
     }
 
     private Main() {

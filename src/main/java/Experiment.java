@@ -20,7 +20,7 @@ public class Experiment implements Callable<Experiment.Result> {
     static int instanceCount = 0;
     static ThreadLocal<Connection> threadConnection = null;
 
-    private static synchronized Connection getConnection(final DriverConnectionSource source) {
+    private static synchronized Connection getConnection(final ConnectionSource source) {
         if (threadConnection == null) {
             threadConnection = new ThreadLocal<Connection>() {
                 @Override
@@ -39,10 +39,10 @@ public class Experiment implements Callable<Experiment.Result> {
     }
 
     private final String label;
-    private final DriverConnectionSource source;
+    private final ConnectionSource source;
     private final String query;
 
-    public Experiment(DriverConnectionSource source, String query) {
+    public Experiment(ConnectionSource source, String query) {
         this.label = String.valueOf(instanceCount++);
         this.source = source;
         this.query = query;

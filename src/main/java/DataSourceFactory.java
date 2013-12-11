@@ -1,19 +1,15 @@
 import net.sf.hajdbc.SimpleDatabaseClusterConfigurationFactory;
 import net.sf.hajdbc.SynchronizationStrategy;
 import net.sf.hajdbc.balancer.random.RandomBalancerFactory;
-import net.sf.hajdbc.balancer.roundrobin.RoundRobinBalancerFactory;
 import net.sf.hajdbc.cache.lazy.SharedLazyDatabaseMetaDataCacheFactory;
-import net.sf.hajdbc.cache.simple.SimpleDatabaseMetaDataCacheFactory;
 import net.sf.hajdbc.dialect.postgresql.PostgreSQLDialectFactory;
 import net.sf.hajdbc.durability.none.NoDurabilityFactory;
 import net.sf.hajdbc.sql.DataSourceDatabase;
 import net.sf.hajdbc.sql.DataSourceDatabaseClusterConfiguration;
-import net.sf.hajdbc.sql.pool.ConnectionPoolDataSource;
-import net.sf.hajdbc.sql.pool.ConnectionPoolDataSourceDatabase;
-import net.sf.hajdbc.sql.pool.ConnectionPoolDataSourceDatabaseClusterConfiguration;
 import net.sf.hajdbc.state.simple.SimpleStateManagerFactory;
 import net.sf.hajdbc.sync.PassiveSynchronizationStrategy;
 import net.sf.hajdbc.util.concurrent.cron.CronExpression;
+import net.sf.hajdbc.xml.XMLDatabaseClusterConfigurationFactory;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
@@ -37,12 +33,28 @@ public class DataSourceFactory {
         this.databaseName = databaseName;
     }
 
+    public DataSourceFactory() {
+        this.serverName = new String[] {};
+        this.user = "";
+        this.password = "";
+        this.databaseName = "";
+    }
+
     public DataSource createPGSimpleDataSource() {
         PGSimpleDataSource source = new PGSimpleDataSource();
         source.setServerName(this.serverName[0]);
         source.setUser(this.user);
         source.setPassword(this.password);
         source.setDatabaseName(this.databaseName);
+        return source;
+    }
+
+    public DataSource createHAJDBCDataSource(String configResource) {
+        net.sf.hajdbc.sql.DataSource source = new net.sf.hajdbc.sql.DataSource();
+        source.setCluster("ha-cluster");
+        source.setConfigurationFactory(new XMLDatabaseClusterConfigurationFactory<DataSource, DataSourceDatabase>(
+                DataSourceDatabaseClusterConfiguration.class, "ha-cluster", configResource
+        ));
         return source;
     }
 

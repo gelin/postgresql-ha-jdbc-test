@@ -11,20 +11,30 @@
              detect-identity-columns="false"
              auto-activate-schedule="*/15 * * ? * *">
         <database id="master"
-                  location="jdbc:postgresql://192.168.7.92/est"
+                  location="org.postgresql.ds.PGSimpleDataSource"
                   weight="1">
             <user>postgres</user>
             <password>postgres</password>
+            <property name="serverName">192.168.7.92</property>
+            <property name="databaseName">est</property>
             <property name="user">est</property>
             <property name="password">est</property>
+            <property name="dataSourceName">master</property>
+            <property name="initialConnections">0</property>
+            <property name="maxConnections">100</property>
         </database>
         <database id="standby"
-                  location="jdbc:postgresql://192.168.7.36/est"
+                  location="org.postgresql.ds.PGSimpleDataSource"
                   weight="1">
             <user>postgres</user>
             <password>postgres</password>
+            <property name="serverName">192.168.7.36</property>
+            <property name="databaseName">est</property>
             <property name="user">est</property>
             <property name="password">est</property>
+            <property name="dataSourceName">standby</property>
+            <property name="initialConnections">0</property>
+            <property name="maxConnections">100</property>
         </database>
     </cluster>
 </ha-jdbc>
