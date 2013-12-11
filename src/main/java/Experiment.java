@@ -29,6 +29,7 @@ public class Experiment implements Callable<Experiment.Result> {
                 @Override
                 protected Connection initialValue() {
                     try {
+                        System.err.println("opening a new connection for " + Thread.currentThread());
                         return source.getConnection();
                     } catch (SQLException e) {
                         e.printStackTrace();

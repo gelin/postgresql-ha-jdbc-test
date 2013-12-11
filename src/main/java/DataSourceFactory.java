@@ -8,11 +8,16 @@ import net.sf.hajdbc.dialect.postgresql.PostgreSQLDialectFactory;
 import net.sf.hajdbc.durability.none.NoDurabilityFactory;
 import net.sf.hajdbc.sql.DataSourceDatabase;
 import net.sf.hajdbc.sql.DataSourceDatabaseClusterConfiguration;
+import net.sf.hajdbc.sql.pool.ConnectionPoolDataSource;
+import net.sf.hajdbc.sql.pool.ConnectionPoolDataSourceDatabase;
+import net.sf.hajdbc.sql.pool.ConnectionPoolDataSourceDatabaseClusterConfiguration;
 import net.sf.hajdbc.state.simple.SimpleStateManagerFactory;
 import net.sf.hajdbc.sync.PassiveSynchronizationStrategy;
+import net.sf.hajdbc.util.concurrent.cron.CronExpression;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +79,12 @@ public class DataSourceFactory {
         cluster.setDatabaseMetaDataCacheFactory(new SharedLazyDatabaseMetaDataCacheFactory());
         cluster.setSequenceDetectionEnabled(false);
         cluster.setIdentityColumnDetectionEnabled(false);
+        try {
+            cluster.setAutoActivationExpression(new CronExpression("*/15 * * ? * *"));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
 
         net.sf.hajdbc.sql.DataSource source = new net.sf.hajdbc.sql.DataSource();
         source.setCluster("ha-cluster");
