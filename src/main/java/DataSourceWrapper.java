@@ -1,8 +1,10 @@
+import net.sf.hajdbc.pool.sql.ConnectionFactory;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class DataSourceWrapper implements ConnectionSource {
+public class DataSourceWrapper implements ConnectionFactory {
 
     private final DataSource source;
 

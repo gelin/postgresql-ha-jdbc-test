@@ -1,4 +1,5 @@
-import javax.sql.DataSource;
+import net.sf.hajdbc.pool.sql.ConnectionFactory;
+
 import java.util.concurrent.*;
 
 public class ExperimentExecutor {
@@ -8,7 +9,7 @@ public class ExperimentExecutor {
     private final long duration;
     private final ExecutorService pool;
     private final ExecutorCompletionService<Experiment.Result> completionService;
-    private final ConnectionSource source;
+    private final ConnectionFactory factory;
     private final String query;
     private int runs = 0;
     private int failures = 0;
@@ -17,13 +18,13 @@ public class ExperimentExecutor {
     private long minTime = Long.MAX_VALUE;
     private long maxTime = 0;
 
-    public ExperimentExecutor(String label, int threads, long duration, ConnectionSource source, String query) {
+    public ExperimentExecutor(String label, int threads, long duration, ConnectionFactory factory, String query) {
         this.label = label;
         this.threads = threads;
         this.duration = duration;
         this.pool = Executors.newFixedThreadPool(threads);
         this.completionService = new ExecutorCompletionService<Experiment.Result>(this.pool);
-        this.source = source;
+        this.factory = factory;
         this.query = query;
     }
 
@@ -34,7 +35,7 @@ public class ExperimentExecutor {
         try {
             for (int i = 0; i < this.threads; i++) {
                 tasks++;
-                this.completionService.submit(new Experiment(this.source, this.query));
+                this.completionService.submit(new Experiment(this.factory, this.query));
             }
             while (tasks > 0) {
                 Future<Experiment.Result> future = this.completionService.take();
@@ -42,7 +43,7 @@ public class ExperimentExecutor {
                 aggregate(future.get());
                 if (System.currentTimeMillis() < end) {
                     tasks++;
-                    this.completionService.submit(new Experiment(this.source, this.query));
+                    this.completionService.submit(new Experiment(this.factory, this.query));
                 } else {
                     this.pool.shutdown();
                 }

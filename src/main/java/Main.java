@@ -1,5 +1,5 @@
 
-import net.sf.hajdbc.DatabaseClusterFactory;
+import net.sf.hajdbc.pool.sql.ConnectionFactory;
 import net.sf.hajdbc.sql.DataSourceDatabase;
 import net.sf.hajdbc.sql.DataSourceDatabaseClusterConfiguration;
 import net.sf.hajdbc.xml.XMLDatabaseClusterConfigurationFactory;
@@ -7,7 +7,6 @@ import net.sf.hajdbc.xml.XMLDatabaseClusterConfigurationFactory;
 import javax.sql.DataSource;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.sql.*;
 
 public class Main {
 
@@ -30,7 +29,7 @@ public class Main {
             );
         }
 
-        ConnectionSource source =createHaJdbcConnectionSource("ha-jdbc-test-cluster.xml");
+        ConnectionFactory source = createHaJdbcConnectionFactory("ha-jdbc-test-cluster.xml");
 //        Experiment experiment = new Experiment(source, QUERY);
 //        experiment.call();
         ExperimentExecutor executor = new ExperimentExecutor("ha-jdbc-account-2", 2, DURATION,
@@ -39,16 +38,16 @@ public class Main {
         System.exit(0); // to force stopping of ha-jdbc threads
     }
 
-    private static ConnectionSource createHaJdbcConnectionSource(String configResource) {
+    private static ConnectionFactory createHaJdbcConnectionFactory(String configResource) {
         net.sf.hajdbc.sql.DataSource source = new net.sf.hajdbc.sql.DataSource();
         source.setCluster("ha-cluster");
         source.setConfigurationFactory(new XMLDatabaseClusterConfigurationFactory<DataSource, DataSourceDatabase>(
                 DataSourceDatabaseClusterConfiguration.class, "ha-cluster", configResource
         ));
-        ConnectionSource connectionSource = new DataSourceWrapper(source);
-//        connectionSource = new ThreadConnectionSource(connectionSource, source.getDatabaseCluster());
-        connectionSource = new ThreadConnectionSource(connectionSource);
-        return connectionSource;
+        ConnectionFactory connectionFactory = new DataSourceWrapper(source);
+//        connectionSource = new ThreadConnectionFactory(connectionSource, source.getDatabaseCluster());
+        connectionFactory = new ThreadConnectionFactory(connectionFactory);
+        return connectionFactory;
     }
 
     private Main() {

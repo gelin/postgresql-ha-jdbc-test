@@ -1,4 +1,5 @@
-import javax.sql.DataSource;
+import net.sf.hajdbc.pool.sql.ConnectionFactory;
+
 import java.sql.*;
 import java.util.concurrent.Callable;
 
@@ -20,12 +21,12 @@ public class Experiment implements Callable<Experiment.Result> {
     static int instanceCount = 0;
 
     private final String label;
-    private final ConnectionSource source;
+    private final ConnectionFactory factory;
     private final String query;
 
-    public Experiment(ConnectionSource source, String query) {
+    public Experiment(ConnectionFactory factory, String query) {
         this.label = String.valueOf(instanceCount++);
-        this.source = source;
+        this.factory = factory;
         this.query = query;
     }
 
@@ -34,7 +35,7 @@ public class Experiment implements Callable<Experiment.Result> {
         Connection connection = null;
         Statement statement = null;
         try {
-            connection = this.source.getConnection();
+            connection = this.factory.getConnection();
             long start = System.currentTimeMillis();
             statement = connection.createStatement();
             ResultSet result = statement.executeQuery(this.query);
