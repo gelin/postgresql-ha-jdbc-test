@@ -41,12 +41,13 @@ public class Main {
 
     private static ConnectionSource createHaJdbcConnectionSource(String configResource) {
         net.sf.hajdbc.sql.DataSource source = new net.sf.hajdbc.sql.DataSource();
+        source.setCluster("ha-cluster");
         source.setConfigurationFactory(new XMLDatabaseClusterConfigurationFactory<DataSource, DataSourceDatabase>(
                 DataSourceDatabaseClusterConfiguration.class, "ha-cluster", configResource
         ));
         ConnectionSource connectionSource = new DataSourceWrapper(source);
-        DatabaseClusterFactory.
-        connectionSource = new ThreadConnectionSource(connectionSource, source.getFactory());
+//        connectionSource = new ThreadConnectionSource(connectionSource, source.getDatabaseCluster());
+        connectionSource = new ThreadConnectionSource(connectionSource);
         return connectionSource;
     }
 

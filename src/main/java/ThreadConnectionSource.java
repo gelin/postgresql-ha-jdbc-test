@@ -10,10 +10,16 @@ public class ThreadConnectionSource implements ConnectionSource {
     private final ConnectionSource source;
     private boolean reconnect;
 
-    public ThreadConnectionSource(ConnectionSource source, DatabaseCluster cluster) {
+    public ThreadConnectionSource(ConnectionSource source) {
         this.source = source;
+    }
+
+    public ThreadConnectionSource(ConnectionSource source, DatabaseCluster cluster) {
+        this(source);
         cluster.addListener(new ClusterListener());
     }
+
+
 
     @Override
     public synchronized Connection getConnection() {
