@@ -65,7 +65,7 @@ public class Main {
 
     private static ConnectionFactory createDBCPPooledConnectionFactory() throws SQLException {
         DriverManager.registerDriver(new PoolingDriver());
-        return new ThreadConnectionFactory(new DriverConnectionFactory("jdbc:ha-jdbc:test-cluster-pool", "est", "est"));
+        return new ThreadConnectionFactory(new DriverConnectionFactory("jdbc:ha-jdbc:test-cluster-dbcp-pool", "est", "est"));
     }
 
     private Main() {
