@@ -59,10 +59,13 @@ public class Experiment implements Callable<Experiment.Result> {
             System.err.println(this.label + ": selected " + count + " rows in " + (end - start) / 1000.0 + " secs");
             return new Result(count, end - start, true);
         } catch (SQLException e) {
-            System.err.println(e);
+            System.err.println(Thread.currentThread().getName() + " experiment failed " + e);
         } finally {
             if (statement != null) {
                 statement.close();
+            }
+            if (connection != null) {
+                connection.close();
             }
         }
         return new Result(0, 0, false);

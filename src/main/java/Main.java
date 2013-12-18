@@ -32,9 +32,9 @@ public class Main {
             );
         }
 
-//        ConnectionFactory factory = createHaJdbcConnectionFactory("ha-jdbc-test-cluster.xml");
+        ConnectionFactory factory = createHaJdbcConnectionFactory("ha-jdbc-test-cluster.xml");
 //        ConnectionFactory factory = createC3P0PooledConnectionFactory();
-        ConnectionFactory factory = createDBCPPooledConnectionFactory();
+//        ConnectionFactory factory = createDBCPPooledConnectionFactory();
 
 //        Experiment experiment = new Experiment(factory, QUERY);
 //        experiment.call();
@@ -52,7 +52,7 @@ public class Main {
         ));
         ConnectionFactory connectionFactory = new DataSourceWrapper(source);
 //        connectionSource = new ThreadConnectionFactory(connectionSource, source.getDatabaseCluster());
-        connectionFactory = new ThreadConnectionFactory(connectionFactory);
+//        connectionFactory = new ThreadConnectionFactory(connectionFactory);
         return connectionFactory;
     }
 
@@ -65,7 +65,7 @@ public class Main {
 
     private static ConnectionFactory createDBCPPooledConnectionFactory() throws SQLException {
         DriverManager.registerDriver(new PoolingDriver());
-        return new ThreadConnectionFactory(new DriverConnectionFactory("jdbc:ha-jdbc:test-cluster-dbcp-pool", "est", "est"));
+        return new DriverConnectionFactory("jdbc:ha-jdbc:test-cluster-dbcp-pool", "est", "est");
     }
 
     private Main() {
