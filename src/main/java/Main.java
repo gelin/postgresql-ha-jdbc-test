@@ -36,11 +36,10 @@ public class Main {
 //        ConnectionFactory factory = createC3P0PooledConnectionFactory();
         ConnectionFactory factory = createDBCPPooledConnectionFactory();
 
-        Experiment experiment = new Experiment(factory, QUERY);
-        experiment.call();
-//        ExperimentExecutor executor = new ExperimentExecutor("ha-jdbc-account-2", 2, DURATION,
-//                factory, QUERY);
-//        executor.run();
+//        Experiment experiment = new Experiment(factory, QUERY);
+//        experiment.call();
+        ExperimentExecutor executor = new ExperimentExecutor("ha-jdbc-account-2", 2, DURATION, factory, QUERY);
+        executor.run();
 
         System.exit(0); // to force stopping of ha-jdbc threads
     }
