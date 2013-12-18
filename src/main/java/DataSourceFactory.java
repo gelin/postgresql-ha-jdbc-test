@@ -96,4 +96,53 @@ public class DataSourceFactory {
         return source;
     }
 
+    public DataSource createHAJDBCPooledDataSource(String adminUser, String adminPassword) {
+        List<DataSourceDatabase> dbs = new ArrayList<DataSourceDatabase>();
+        for (String server : this.serverName) {
+            DataSourceDatabase db = new DataSourceDatabase();
+            db.setId(server);
+            db.setWeight(1);
+            db.setLocation("com.mchange.v2.c3p0.ComboPooledDataSource");
+            db.setUser(adminUser);
+            db.setPassword(adminPassword);
+            db.setProperty("driverClass", "org.postgresql.Driver");
+            db.setProperty("jdbcUrl", "jdbc:postgresql://" + server + "/" + this.databaseName);
+            db.setProperty("user", this.user);
+            db.setProperty("password", this.password);
+            db.setProperty("acquireIncrement", "1");
+            db.setProperty("initialPoolSize", "0");
+            db.setProperty("maxIdleTimeExcessConnections", "5");
+            db.setProperty("preferredTestQuery", "SELECT 1");
+            db.setProperty("testConnectionOnCheckin", "true");
+            db.setProperty("usesTraditionalReflectiveProxies", "true");
+            dbs.add(db);
+        }
+
+        DataSourceDatabaseClusterConfiguration cluster = new DataSourceDatabaseClusterConfiguration();
+        cluster.setDatabases(dbs);
+        cluster.setDialectFactory(new PostgreSQLDialectFactory());
+        cluster.setStateManagerFactory(new SimpleStateManagerFactory());
+        Map<String, SynchronizationStrategy> syncs = new HashMap<String, SynchronizationStrategy>();
+        syncs.put("passive", new PassiveSynchronizationStrategy());
+        cluster.setSynchronizationStrategyMap(syncs);
+        cluster.setDefaultSynchronizationStrategy("passive");
+        cluster.setBalancerFactory(new RandomBalancerFactory());
+        cluster.setDurabilityFactory(new NoDurabilityFactory());
+        cluster.setDatabaseMetaDataCacheFactory(new SharedLazyDatabaseMetaDataCacheFactory());
+        cluster.setSequenceDetectionEnabled(false);
+        cluster.setIdentityColumnDetectionEnabled(false);
+        try {
+            cluster.setAutoActivationExpression(new CronExpression("*/15 * * ? * *"));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        net.sf.hajdbc.sql.DataSource source = new net.sf.hajdbc.sql.DataSource();
+        source.setCluster("ha-cluster");
+        source.setConfigurationFactory(new SimpleDatabaseClusterConfigurationFactory<DataSource, DataSourceDatabase>(cluster));
+
+        return source;
+    }
+
 }

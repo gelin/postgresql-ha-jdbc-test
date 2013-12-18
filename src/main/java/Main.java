@@ -29,12 +29,15 @@ public class Main {
             );
         }
 
-        ConnectionFactory source = createHaJdbcConnectionFactory("ha-jdbc-test-cluster.xml");
-//        Experiment experiment = new Experiment(source, QUERY);
-//        experiment.call();
-        ExperimentExecutor executor = new ExperimentExecutor("ha-jdbc-account-2", 2, DURATION,
-                source, QUERY);
-        executor.run();
+//        ConnectionFactory factory = createHaJdbcConnectionFactory("ha-jdbc-test-cluster.xml");
+        ConnectionFactory factory = createPooledConnectionFactory();
+
+        Experiment experiment = new Experiment(factory, QUERY);
+        experiment.call();
+//        ExperimentExecutor executor = new ExperimentExecutor("ha-jdbc-account-2", 2, DURATION,
+//                factory, QUERY);
+//        executor.run();
+
         System.exit(0); // to force stopping of ha-jdbc threads
     }
 
@@ -48,6 +51,13 @@ public class Main {
 //        connectionSource = new ThreadConnectionFactory(connectionSource, source.getDatabaseCluster());
         connectionFactory = new ThreadConnectionFactory(connectionFactory);
         return connectionFactory;
+    }
+
+    private static ConnectionFactory createPooledConnectionFactory() {
+        DataSourceFactory factory = new DataSourceFactory(new String[] {"192.168.7.92", "192.168.7.36"},
+                "est", "est", "est");
+        DataSource source = factory.createHAJDBCPooledDataSource("postgres", "postgres");
+        return new ThreadConnectionFactory(new DataSourceWrapper(source));
     }
 
     private Main() {
