@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<ha-jdbc xmlns="urn:ha-jdbc:cluster:3.0">
+    <sync id="passive"/>
+    <state id="simple"/>
+    <cluster dialect="postgresql"
+             balancer="random"
+             default-sync="passive"
+             durability="none"
+             meta-data-cache="shared-lazy"
+             detect-sequences="false"
+             detect-identity-columns="false"
+             auto-activate-schedule="*/15 * * ? * *">
+        <database id="master"
+                  location="jdbc:apache:commons:dbcp:/test-master"
+                  weight="1">
+            <user>postgres</user>
+            <password>postgres</password>
+        </database>
+        <database id="standby"
+                  location="jdbc:apache:commons:dbcp:/test-standby"
+                  weight="1">
+            <user>postgres</user>
+            <password>postgres</password>
+        </database>
+    </cluster>
+</ha-jdbc>

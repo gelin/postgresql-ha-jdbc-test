@@ -3,10 +3,13 @@ import net.sf.hajdbc.pool.sql.ConnectionFactory;
 import net.sf.hajdbc.sql.DataSourceDatabase;
 import net.sf.hajdbc.sql.DataSourceDatabaseClusterConfiguration;
 import net.sf.hajdbc.xml.XMLDatabaseClusterConfigurationFactory;
+import org.apache.commons.dbcp.PoolingDriver;
 
 import javax.sql.DataSource;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Main {
 
@@ -30,7 +33,8 @@ public class Main {
         }
 
 //        ConnectionFactory factory = createHaJdbcConnectionFactory("ha-jdbc-test-cluster.xml");
-        ConnectionFactory factory = createPooledConnectionFactory();
+//        ConnectionFactory factory = createC3P0PooledConnectionFactory();
+        ConnectionFactory factory = createDBCPPooledConnectionFactory();
 
         Experiment experiment = new Experiment(factory, QUERY);
         experiment.call();
@@ -53,11 +57,16 @@ public class Main {
         return connectionFactory;
     }
 
-    private static ConnectionFactory createPooledConnectionFactory() {
+    private static ConnectionFactory createC3P0PooledConnectionFactory() {
         DataSourceFactory factory = new DataSourceFactory(new String[] {"192.168.7.92", "192.168.7.36"},
                 "est", "est", "est");
         DataSource source = factory.createHAJDBCPooledDataSource("postgres", "postgres");
         return new ThreadConnectionFactory(new DataSourceWrapper(source));
+    }
+
+    private static ConnectionFactory createDBCPPooledConnectionFactory() throws SQLException {
+        DriverManager.registerDriver(new PoolingDriver());
+        return new ThreadConnectionFactory(new DriverConnectionFactory("jdbc:ha-jdbc:test-cluster-pool", "est", "est"));
     }
 
     private Main() {
